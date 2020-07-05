@@ -7,11 +7,13 @@ Feel free to provide comments, I just started learning Python for 2 monnths and 
 ## Result
 Result
 I just played 5000 games because it is too long (over 8 hours), but there is already a trend of improvement, although it is not so obvious.
+
 ![image](https://github.com/leolui2004/atari_rl_ac/blob/master/atari_ac_v1_score.png)
 
 With x-axis being the episode (number of plays) and y-axis is the score, the line is the average score of the last 50 episodes. The result shows a little improvement on average scores from around 1.2 to 2.0 after 5000 episodes.
 
 However for the graph of Timestep also in average of 50 episodes, the result is brilliant.
+
 ![image](https://github.com/leolui2004/atari_rl_ac/blob/master/atari_ac_v1_timestep.png)
 
 ## Methodology
