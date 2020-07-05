@@ -24,7 +24,7 @@ However for the graph of Timestep also in average of 50 episodes, the result is 
 4. Observation, reward received after an action are passed to model for training
 5. Record the reward and go back to step 1 again until an episode ends (all life lost)
 
-![image](https://github.com/leolui2004/atari_rl_ac/blob/master/atari_v1.png)
+![image](https://github.com/leolui2004/atari_rl_ac/blob/master/atari_ac_v1_actor.png)
 
 ### Reinforcement Learning Part
 1. Images are resized to 84x84, combining 4 consecutive frames as one input so as to represent an action not just a particular state for easier learning
