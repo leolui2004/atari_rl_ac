@@ -42,7 +42,6 @@ model_save = 1
 log_save = 1
 actor_h5_path = 'atari_ac_actor.h5'
 critic_h5_path = 'atari_ac_critic.h5'
-policy_h5_path = 'atari_ac_policy.h5'
 actor_graph_path = 'atari_ac_actor.png'
 critic_graph_path = 'atari_ac_critic.png'
 policy_graph_path = 'atari_ac_policy.png'
@@ -86,7 +85,6 @@ critic.compile(optimizer=Adam(lr=critic_lr), loss='mean_squared_error')
 if pretrain_use == 1:
     actor = load_model(actor_h5_path, custom_objects={'custom_loss': custom_loss}, compile=False)
     critic = load_model(critic_h5_path)
-    policy = load_model(policy_h5_path)
 
 def action_choose(state, epsilon, episode, action_space):
     if epsilon >= random.random() or episode < initial_replay: # set random play
@@ -152,14 +150,12 @@ for episode in range(episode_limit):
 
 if pretrain_use == 1:
     if model_save == 1:
-        actor.save(actor_h5_path_2)
-        critic.save(critic_h5_path_2)
-        policy.save(policy_h5_path_2)
+        actor.save(actor_h5_path)
+        critic.save(critic_h5_path)
 else:
     if model_save == 1:
         actor.save(actor_h5_path)
         critic.save(critic_h5_path)
-        policy.save(policy_h5_path)
         plot_model(actor, show_shapes=True, to_file=actor_graph_path)
         plot_model(critic, show_shapes=True, to_file=critic_graph_path)
         plot_model(policy, show_shapes=True, to_file=policy_graph_path)
