@@ -76,17 +76,17 @@ def custom_loss(y_true, y_pred):
     log_lik = y_true * K.log(out) # policy gradient
     return K.sum(-log_lik * delta)
 
-if pretrain_use == 1:
-    actor = load_model(actor_h5_path, custom_objects={'custom_loss': custom_loss}, compile=False)
-    critic = load_model(critic_h5_path)
-    policy = load_model(policy_h5_path)
-
 actor = Model(inputs=[input, delta], outputs=[prob]) # fit only, no predict
 critic = Model(inputs=[input], outputs=[value]) # fit and predict
 policy = Model(inputs=[input], outputs=[prob]) # probabiliy of action, predict only, no fit
 
 actor.compile(optimizer=Adam(lr=actor_lr), loss=custom_loss)
 critic.compile(optimizer=Adam(lr=critic_lr), loss='mean_squared_error')
+
+if pretrain_use == 1:
+    actor = load_model(actor_h5_path, custom_objects={'custom_loss': custom_loss}, compile=False)
+    critic = load_model(critic_h5_path)
+    policy = load_model(policy_h5_path)
 
 def action_choose(state, epsilon, episode, action_space):
     if epsilon >= random.random() or episode < initial_replay: # set random play
