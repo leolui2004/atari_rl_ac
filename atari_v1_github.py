@@ -37,6 +37,7 @@ score_list = [] # store scores for all episodes
 step_list = [] # store timesteps for all episodes
 score_avg_freq = 50
 pretrain_use = 0
+model_train = 1
 model_save = 1
 log_save = 1
 actor_h5_path = 'atari_ac_actor.h5'
@@ -75,16 +76,17 @@ def custom_loss(y_true, y_pred):
     log_lik = y_true * K.log(out) # policy gradient
     return K.sum(-log_lik * delta)
 
-actor = Model(inputs=[input, delta], outputs=[prob]) # fit only, no predict
-actor.compile(optimizer=Adam(lr=actor_lr), loss=custom_loss)
-critic = Model(inputs=[input], outputs=[value]) # fit and predict
-critic.compile(optimizer=Adam(lr=critic_lr), loss='mean_squared_error')
-policy = Model(inputs=[input], outputs=[prob]) # probabiliy of action, predict only, no fit
-
 if pretrain_use == 1:
-    actor = load_model(actor_h5_path, compile=False) # set custom loss or not to compile
+    actor = load_model(actor_h5_path, custom_objects={'custom_loss': custom_loss}, compile=False)
     critic = load_model(critic_h5_path)
     policy = load_model(policy_h5_path)
+
+actor = Model(inputs=[input, delta], outputs=[prob]) # fit only, no predict
+critic = Model(inputs=[input], outputs=[value]) # fit and predict
+policy = Model(inputs=[input], outputs=[prob]) # probabiliy of action, predict only, no fit
+
+actor.compile(optimizer=Adam(lr=actor_lr), loss=custom_loss)
+critic.compile(optimizer=Adam(lr=critic_lr), loss='mean_squared_error')
 
 def action_choose(state, epsilon, episode, action_space):
     if epsilon >= random.random() or episode < initial_replay: # set random play
@@ -133,7 +135,7 @@ for episode in range(episode_limit):
         action = action_choose(state[np.newaxis, :], epsilon, episode, action_space)
         observation, reward, done, _ = env.step(action)
         state_next = encode(observation, observation_last, state)
-        if pretrain_use == 0:
+        if model_train == 1:
             network_learn(state[np.newaxis, :], action, reward, state_next[np.newaxis, :], done)
         state = state_next
         
@@ -148,7 +150,12 @@ for episode in range(episode_limit):
     
     epsilon = epsilon_reduce(epsilon, episode)
 
-if pretrain_use == 0:
+if pretrain_use == 1:
+    if model_save == 1:
+        actor.save(actor_h5_path_2)
+        critic.save(critic_h5_path_2)
+        policy.save(policy_h5_path_2)
+else:
     if model_save == 1:
         actor.save(actor_h5_path)
         critic.save(critic_h5_path)
